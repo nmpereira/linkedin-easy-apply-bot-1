@@ -94,6 +94,8 @@ const askForPauseInput = async () => {
       });
 
       console.log(`Applied to ${title} at ${companyName}`);
+      // close the application page
+      await applicationPage.close();
     } catch {
       console.log(`Error applying to ${title} at ${companyName}`);
     }

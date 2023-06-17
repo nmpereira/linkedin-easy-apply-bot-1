@@ -20,7 +20,7 @@ async function getJobSearchMetadata({ page, location, keywords }: { page: Page, 
 
   const geoId = await page.evaluate(() => new URLSearchParams(document.location.search).get('geoId'));
 
-  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 5000 }) as ElementHandle<HTMLElement>;
+  const numJobsHandle = await page.waitForSelector(selectors.searchResultListText, { timeout: 15000 }) as ElementHandle<HTMLElement>;
   const numAvailableJobs = await numJobsHandle.evaluate((el) => parseInt((el as HTMLElement).innerText.replace(',', '')));
 
   return {
@@ -71,7 +71,7 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
 
     await page.goto(url.toString(), { waitUntil: "load" });
 
-    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(MAX_PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 5000 });
+    await page.waitForSelector(`${selectors.searchResultListItem}:nth-child(${Math.min(MAX_PAGE_SIZE, numAvailableJobs - numSeenJobs)})`, { timeout: 15000 });
 
     const jobListings = await page.$$(selectors.searchResultListItem);
 
@@ -97,6 +97,24 @@ async function* fetchJobLinksUser({ page, location, keywords, workplace: { remot
         const canApply = !!(await page.$(selectors.easyApplyButtonEnabled));
         const jobDescriptionLanguage = languageDetector.detect(jobDescription, 1)[0][0];
         const matchesLanguage = jobDescriptionLanguages.includes("any") || jobDescriptionLanguages.includes(jobDescriptionLanguage);
+
+
+        // if (!jobTitleRegExp.test(title)) {
+        //   console.log(`TITLE: Found job: ${title} at ${companyName} but does not match job title`, 'title', jobTitleRegExp.test(title));
+       
+         
+        // }
+        // if (!jobDescriptionRegExp.test(jobDescription)) {
+        //   console.log(`DESCRIPTION: Found job: ${title} at ${companyName} but does not match job description`, 'jobDescription', jobDescriptionRegExp.test(jobDescription));
+        //   await wait(3000);
+         
+        // }
+        // if (!matchesLanguage) {
+        //   console.log(`LANG: Found job: ${title} at ${companyName} but does not match job description language`, 'languages:', matchesLanguage);
+        //   await wait(3000);
+        // }
+
+
 
         if (canApply && jobTitleRegExp.test(title) && jobDescriptionRegExp.test(jobDescription) && matchesLanguage) {
           numMatchingJobs++;
